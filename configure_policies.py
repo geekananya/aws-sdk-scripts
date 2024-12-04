@@ -2,7 +2,6 @@ import boto3
 import json
 
 iam = boto3.client('iam')
-
 policy_arn = 'arn:aws:iam::779846787648:policy/mys3policy'
 
 def create_new_policy():
@@ -27,12 +26,15 @@ def handle_user_policies(user):
     else:
         print("Policy already exists.")
 
-    iam.attach_user_policy(
-        UserName=user,
-        PolicyArn= policy_arn
-    )
+    try:
+        iam.attach_user_policy(
+            UserName=user,
+            PolicyArn= policy_arn
+        )
+        print(iam.list_attached_user_policies(UserName='test'))
 
-    print(iam.list_attached_user_policies(UserName='test'))
+    except iam.exceptions.NoSuchEntityException as e:
+        print(e)
 
 
 handle_user_policies(user='test')
